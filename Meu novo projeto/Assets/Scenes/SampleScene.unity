@@ -3564,8 +3564,39 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3615811822019831740, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+      propertyPath: groundCheck
+      value: 
+      objectReference: {fileID: 3615811820593246817}
+    - target: {fileID: 3615811822019831740, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+      propertyPath: ceilingCheck
+      value: 
+      objectReference: {fileID: 3615811820593246816}
+    - target: {fileID: 3615811822019831740, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+      propertyPath: groundMask.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3615811822019831740, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+      propertyPath: crouchDisableCollider
+      value: 
+      objectReference: {fileID: 3615811820593246815}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+--- !u!61 &3615811820593246815 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 1190398433, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+  m_PrefabInstance: {fileID: 3615811820593246814}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3615811820593246816 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3615811821143989596, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+  m_PrefabInstance: {fileID: 3615811820593246814}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3615811820593246817 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3615811820515440160, guid: e85b9cebe205b9748b725578e65d0c4d, type: 3}
+  m_PrefabInstance: {fileID: 3615811820593246814}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9124074124902757447
 PrefabInstance:
   m_ObjectHideFlags: 0
