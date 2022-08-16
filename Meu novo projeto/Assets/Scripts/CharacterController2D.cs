@@ -3,19 +3,20 @@ using UnityEngine.Events;
 
 public class CharacterController2D : MonoBehaviour
 {
-	[SerializeField] private float jumpForce = 250f;							// Quantidade de força adicionada ao pulo.
-	[Range(0, 1)] [SerializeField] private float crouchSpeed = .36f;			// Velocidade máxima ao abaixar. 1 = 100%
-	[Range(0, .3f)] [SerializeField] private float movementSmoothing = .05f;	// Quantidade de suavização do movimento.
-	[SerializeField] private LayerMask groundMask;								// Máscara que define o que é chão.
-	[SerializeField] private Transform groundCheck;								// Marcador de posição para checar quando o player está no chão.
-	[SerializeField] private Transform ceilingCheck;							// Marcador de posição para checar se há um teto.
-	[SerializeField] private Collider2D crouchDisableCollider;					// Colisor que será desabilitado quando abaixar.
-
-	private const float _groundedRadius = .2f;	// Raio do OverlapCircle para saber se está no chão.
-	private bool _grounded;						// Se player está ou não no chão.
-	private const float _ceilingRadius = .2f;	// Raio do OverlapCircle para saber se player pode levantar.
+	[SerializeField] private float jumpForce = 250f;							// Quantidade de forï¿½a adicionada ao pulo.
+	[Range(0, 1)] [SerializeField] private float crouchSpeed = .36f;			// Velocidade mï¿½xima ao abaixar. 1 = 100%
+	[Range(0, .3f)] [SerializeField] private float movementSmoothing = .05f;	// Quantidade de suavizaï¿½ï¿½o do movimento.
+	[SerializeField] private LayerMask groundMask;								// Mï¿½scara que define o que ï¿½ chï¿½o.
+	[SerializeField] private Transform groundCheck;								// Marcador de posiï¿½ï¿½o para checar quando o player estï¿½ no chï¿½o.
+	[SerializeField] private Transform ceilingCheck;							// Marcador de posiï¿½ï¿½o para checar se hï¿½ um teto.
+	[SerializeField] private Collider2D crouchDisableCollider;					// Colisor que serï¿½ desabilitado quando abaixar.
+	[SerializeField] private bool airControl = false;
+	
+	private const float GroundedRadius = .2f;	// Raio do OverlapCircle para saber se estï¿½ no chï¿½o.
+	private bool _grounded;						// Se player estï¿½ ou nï¿½o no chï¿½o.
+	private const float CeilingRadius = .2f;	// Raio do OverlapCircle para saber se player pode levantar.
 	private Rigidbody2D _rb;
-	private bool _facingRight = true;			// Para determinar qual lado o player está olhando.
+	private bool _facingRight = true;			// Para determinar qual lado o player estï¿½ olhando.
 	private Vector3 _velocity = Vector3.zero;
 
 	[Header("Events")]
@@ -45,8 +46,8 @@ public class CharacterController2D : MonoBehaviour
 		bool wasGrounded = _grounded;
 		_grounded = false;
 
-		// O player está no chão se o circlecast utilizando a posição do groundCheck escosta qualquer objeto designado como chão.
-		Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, _groundedRadius, groundMask);
+		// O player estï¿½ no chï¿½o se o circlecast utilizando a posiï¿½ï¿½o do groundCheck escosta qualquer objeto designado como chï¿½o.
+		Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, GroundedRadius, groundMask);
 		for (int i = 0; i < colliders.Length; i++)
 		{
 			if (colliders[i].gameObject != gameObject)
@@ -63,17 +64,16 @@ public class CharacterController2D : MonoBehaviour
 		// Se abaixado, checar se personagem pode se levantar
 		if (!crouch)
 		{
-			// Se há um colisor bloqueando o player de levantar, mantém abaixado
-			if (Physics2D.OverlapCircle(ceilingCheck.position, _ceilingRadius, groundMask))
+			// Se hï¿½ um colisor bloqueando o player de levantar, mantï¿½m abaixado
+			if (Physics2D.OverlapCircle(ceilingCheck.position, CeilingRadius, groundMask))
 			{
 				crouch = true;
 			}
 		}
 
-		// Só controla o personagem se está no chão.
-		if (_grounded)
+		// Sï¿½ controla o personagem se estï¿½ no chï¿½o ou airControl == true.
+		if (_grounded || airControl)
 		{
-
 			// Se agaixado
 			if (crouch)
 			{
@@ -83,7 +83,7 @@ public class CharacterController2D : MonoBehaviour
 					OnCrouchEvent.Invoke(true);
 				}
 
-				// Reduz a velocidade atravéz do multiplicador crouchSpeed.
+				// Reduz a velocidade atravï¿½z do multiplicador crouchSpeed.
 				move *= crouchSpeed;
 
 				// Desativa um dos colisores quando abaixado.
@@ -91,7 +91,7 @@ public class CharacterController2D : MonoBehaviour
 					crouchDisableCollider.enabled = false;
 			} else
 			{
-				// Ativa o colisor quando não está mais abaixado
+				// Ativa o colisor quando nï¿½o estï¿½ mais abaixado
 				if (crouchDisableCollider != null)
 					crouchDisableCollider.enabled = true;
 
@@ -102,28 +102,28 @@ public class CharacterController2D : MonoBehaviour
 				}
 			}
 
-			// Move the character by finding the target velocity
+			// Move o personagem encontrando a velocidade alvo
 			Vector3 targetVelocity = new Vector2(move * 10f, _rb.velocity.y);
-			// And then smoothing it out and applying it to the character
+			// Depois suaviza o movimento e aplica ao personagem
 			_rb.velocity = Vector3.SmoothDamp(_rb.velocity, targetVelocity, ref _velocity, movementSmoothing);
 
-			// If the input is moving the player right and the player is facing left...
+			// Se o input estÃ¡ movendo o player para a direita e o personagem estÃ¡ olhando para esquerda...
 			if (move > 0 && !_facingRight)
 			{
-				// ... flip the player.
+				// ... vira o player.
 				Flip();
 			}
-			// Otherwise if the input is moving the player left and the player is facing right...
+			// Se o input estÃ¡ movendo o player para a esquerda e o personagem estÃ¡ olhando para direita...
 			else if (move < 0 && _facingRight)
 			{
-				// ... flip the player.
+				// ... vira o player.
 				Flip();
 			}
 		}
-		// If the player should jump...
+		// Se o player deve pular...
 		if (_grounded && jump)
 		{
-			// Add a vertical force to the player.
+			// Adiciona forÃ§a vertical.
 			_grounded = false;
 			_rb.AddForce(new Vector2(0f, jumpForce));
 		}
@@ -132,10 +132,10 @@ public class CharacterController2D : MonoBehaviour
 
 	private void Flip()
 	{
-		// Switch the way the player is labelled as facing.
+		// Altera a rotulaÃ§Ã£o do player, se estÃ¡ ou nÃ£o olhando para a direita.
 		_facingRight = !_facingRight;
 
-		// Multiply the player's x local scale by -1.
+		// Multiplica o localScale do player por -1.
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
 		transform.localScale = theScale;
